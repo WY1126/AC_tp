@@ -2,6 +2,14 @@
 namespace app\index\controller;
 
 use think\Db;
+use app\model\forassociation\User as Usermodel;
+use app\model\forassociation\Association as Associationmodel;
+use app\model\forassociation\Section as Sectionmodel;
+use app\model\forassociation\Authority as Authoritymodel;
+use app\model\forassociation\SectionMember as Sectionmembermodel;
+use app\model\forassociation\Information as Informationmodel;
+use app\model\forassociation\AsInComment as AsInCommentmodel;
+use app\model\forassociation\AsInReply as AsInReplymodel;
 
 class Index
 {
@@ -16,7 +24,38 @@ class Index
     }
     public function getuser()
     {
-        $date = Db::table('ac_user')->where('uid',1) -> select();
-        return json($date);
+        return json(Usermodel::where('uid',1)->find());
+    }
+    public function getassociation()
+    {
+        return json(Associationmodel::where('aid',1)->find());
+    }
+    public function getsection()
+    {
+        return json(Sectionmodel::where('sid',2)->find());
+    }
+    public function gettime()
+    {
+        return json(time());
+    }
+    public function getauthority()
+    {
+        return json(Authoritymodel::where('auid',1)->find());
+    }
+    public function getsectionmember()
+    {
+        return json(Sectionmembermodel::where('sid',1)->select());
+    }
+    public function getinformation()
+    {
+        return json(Informationmodel::where('iid',3)->json(['image'])->find());
+    }
+    public function getcomment()
+    {
+        return json(AsInCommentmodel::where('comment_id',1)->find());
+    }
+    public function getreply()
+    {
+        return json(AsInReplymodel::where('rid',1)->find());
     }
 }
