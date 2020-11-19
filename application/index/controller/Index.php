@@ -62,4 +62,5 @@ class Index
     {
         return json(AsInReplymodel::where('rid',1)->find());
     }
+
 }
