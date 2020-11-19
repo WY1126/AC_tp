@@ -11,7 +11,7 @@ class User
      */
     public function signin()
     {
-        
+        return 'j';
     }
 
 }
