@@ -23,19 +23,25 @@ class User extends Controller
 //            'username'      =>      'require|max:5',
 //            'password'      =>      'require',
 //        ]);
-        $username = $request -> post('username');
-        $password = md5($request -> post('password'));
-        $returndata = [];
-        $user = UserModel::get(['username' => $username]);
-        if(!empty($user)) {
-            $returndata['error_code']     =   0;
-            $returndata['msg']            = '用户名已存在';
-            return json($returndata);
-        }
+//        $username = $request -> get('username');
+//        $password = md5($request -> get('password'));
+//        $returndata = [];
+//        $user = UserModel::get(['username' => $username]);
+//        if(!empty($user)) {
+//            $returndata['error_code']     =   0;
+//            $returndata['msg']            = '用户名已存在';
+//            return json($returndata);
+//        }
 
         $user = new UserModel();
-        $user -> data(['username'   => $username,
-            'password'  => $password,
+        $user -> data([
+            'username'   => '$username',
+            'password'  => '$password',
+            'nickname'  => 'sas',
+            'avatar'    => 'sadas',
+            'qq'        =>  '12121',
+            'sex'       =>  1,
+            'wx'        => 'sasa',
         ]);
         $result = $user->save();
         if($result) {
@@ -43,7 +49,7 @@ class User extends Controller
             $returndata['msg']              = '注册失败';
             return $returndata;
         } else {
-            return $result;
+            return json($result);
         }
     }
 
