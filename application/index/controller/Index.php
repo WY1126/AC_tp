@@ -19,4 +19,8 @@ class Index
         $date = Db::table('ac_user')->where('uid',1) -> select();
         return json($date);
     }
+    public function a()
+    {
+        return 'sa';
+    }
 }
