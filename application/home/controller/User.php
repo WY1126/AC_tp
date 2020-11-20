@@ -99,6 +99,4 @@ class User extends Controller
             return json($user);
         }
     }
-
-
 }
