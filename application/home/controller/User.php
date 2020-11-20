@@ -22,12 +22,7 @@ class User extends Controller
         //验证用户名和密码，前段做就好
         $username = $request -> post('username');
         $password = md5($request -> post('password'));
-//        $file     = $request -> file('avatarimage');  $avatarurl = '';
-//        if(!$file) {
-//            $avatarurl = uploadavatar($file);
-//        } else {
-//            $avatarurl = $request -> post('avatarurl');
-//        }
+
         $returndata = [];
         $user = UserModel::get(['username' => $username]);
         if(!empty($user)) {
