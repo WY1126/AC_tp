@@ -4,6 +4,7 @@
 namespace app\association\controller;
 use app\model\forassociation\Association as AssociatonModel;
 use think\Request;
+use app\model\forassociation\Associator as AssociatorModel;
 
 class Association
 {
@@ -18,6 +19,10 @@ class Association
     public function getmyassociation(Request $request)
     {
         $uid = $request -> post('uid');
+//        return json($uid);
+        $aid = AssociatorModel::where('uid',$uid)->value('aid');
+        return json($aid);
+//        return json(AssociatonModel::hasWhere('aid',$aid)->find());
     }
 
 }
