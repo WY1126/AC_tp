@@ -9,4 +9,5 @@ use think\Model;
 class Associator extends Model
 {
 
+
 }

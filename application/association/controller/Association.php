@@ -5,6 +5,8 @@ namespace app\association\controller;
 use app\model\forassociation\Association as AssociatonModel;
 use think\Request;
 use app\model\forassociation\Associator as AssociatorModel;
+use app\model\forassociation\AsLike as AslikeModel;
+use app\model\forassociation\Section as SectionModel;
 
 class Association
 {
@@ -62,15 +64,20 @@ class Association
         }
         return $association;
     }
-    public function getanum($aid)
+    //复合查询查找部门和部门下的成员
+    public function test()
     {
-        $num = AssociatorModel::where('aid',$aid)->count();
-        if(!$num)
-        {
-            $num=0;
-        }
-        return $num;
+//        return 'dsa';
+//        die;
+        $sector = SectionModel::where('sid',1)->find();
+
+        $members = $sector->members;
+
+        return json($members);
+
+
     }
+
     //进入社团详情页，获取详细信息
     public function associationinfo(Request $request)
     {
@@ -78,7 +85,12 @@ class Association
         //获取社团协会基本信息
         $association = $this->getassociation($aid);
         //获取社团人数、点赞数
-        $num = AssociatorModel::where('aid',$aid)->count();
+        $ernum = AssociatorModel::where('aid',$aid)->count();
+        $likenum = AslikeModel::where('aid',$aid)->count();
+        //
+        $sector = SectionModel::where('aid',$aid)->columu('sid','name');
+
+
     }
 
 }
