@@ -20,10 +20,9 @@ class User extends Controller
     public function signup(Request $request)
     {
         //验证用户名和密码，前段做就好
+        $returndata = [];
         $username = $request -> post('username');
         $password = md5($request -> post('password'));
-
-        $returndata = [];
         $user = UserModel::get(['username' => $username]);
         if(!empty($user)) {
             $returndata['error_code']     =   0;
