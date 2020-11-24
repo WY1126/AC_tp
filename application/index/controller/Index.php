@@ -1,6 +1,7 @@
 <?php
 namespace app\index\controller;
 
+use think\Controller;
 use think\Db;
 use app\model\forassociation\User as Usermodel;
 use app\model\forassociation\Association as Associationmodel;
@@ -10,8 +11,11 @@ use app\model\forassociation\SectionMember as Sectionmembermodel;
 use app\model\forassociation\Information as Informationmodel;
 use app\model\forassociation\AsInComment as AsInCommentmodel;
 use app\model\forassociation\AsInReply as AsInReplymodel;
+use app\model\forassociation\Test as TestModel;
+use think\Request;
+use app\all\controller\Upload;
 
-class Index
+class Index extends Controller
 {
     public function singup()
     {
@@ -62,5 +66,24 @@ class Index
     {
         return json(AsInReplymodel::where('rid',1)->find());
     }
-
+    //获取全部test数据
+    public function getalltest()
+    {
+        $test = TestModel::select();
+        return $test;
+    }
+    //插入test数据
+    public function insettest(Request $request)
+    {
+//        return json($request->file('image'));
+        $testinfo = $request -> param();
+//        $img = $request ->post('image');
+//        uploadavatar($file)
+        //实例化对象
+        $upload = new Upload();
+        $testinfo['image'] = $upload->uploadavatar($request ->file('image'));
+        $Test = new TestModel();
+        $Test ->save($testinfo);
+        return json($Test);
+    }
 }
