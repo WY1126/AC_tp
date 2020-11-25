@@ -92,5 +92,58 @@ class Association
 
 
     }
+    /**用户点赞社团接口或取消点赞
+     * 2020.11.25   12:50   王瑶
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function likeassociation(Request $request)
+    {
+        $aid = $request->post('aid');
+        $uid = $request->post('uid');
+        //判断点赞表是否存在
+        $temp = [
+            'aid'   =>  $aid,
+            'uid'   =>  $uid,
+        ];
+        $aslike = new AslikeModel();
+        $data = AslikeModel::where($temp)->find();
+        //不存在点赞表，创建点赞表
+        if(!$data)
+        {
+            $f = $aslike->save($temp);
+            if($f) {
+                $data = AslikeModel::where($temp)->find();
+            }
+        }
+        $likenum = $this->dolikeas($data);
 
+        //修改statue
+        $msg = ['取消点赞','点赞成功'];
+        //修改status状态
+        $data->statue += 1;     $data->statue %= 2;
+
+        $data->save();
+        return json([
+            'data'      =>      $data,
+            'likenum'   =>      $likenum,
+            'msg'       =>      $msg[$data->statue],
+        ]);
+
+    }
+    //发出点赞操作
+    public function dolikeas ($data)
+    {
+//        $data['aid'] = $request->post('aid');
+//        $data['statue'] = $request->post('statue');
+        //对社团表likenum进行增减
+        $temp = AssociatonModel::where('id',$data['aid'])->find();
+        if($data['statue']==0){
+            $temp->like_num +=1;
+        } else {
+            $temp->like_num -=1;
+        }
+        $temp->save();
+        return $temp->like_num;
+    }
 }
