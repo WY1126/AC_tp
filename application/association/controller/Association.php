@@ -7,6 +7,7 @@ use think\Request;
 use app\model\forassociation\Associator as AssociatorModel;
 use app\model\forassociation\AsLike as AslikeModel;
 use app\model\forassociation\Section as SectionModel;
+use app\model\forassociation\Information as InformationModel;
 
 class Association
 {
@@ -54,10 +55,10 @@ class Association
      */
     public function getassociation($aid)
     {
-        $association = AssociatonModel::where('aid',$aid)->findOrEmpty();
+        $association = AssociatonModel::where('id',$aid)->find();
         if(!$association)
         {
-            return json([
+            return ([
                 'error_code'        =>      1,
                 'msg'               =>      '错误',
             ]);
@@ -75,22 +76,37 @@ class Association
 
         return json($members);
 
-
     }
 
-    //进入社团详情页，获取详细信息
-    public function associationinfo(Request $request)
+    /**获取社团详细信息
+     * 2020.11.24 16：34     王瑶
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function getassociationinfo(Request $request)
     {
-        $aid = $request -> post('aid');
-        //获取社团协会基本信息
+        $aid = $request -> post('id');
+        //获取社团协会基本信息zi'xun
         $association = $this->getassociation($aid);
-        //获取社团人数、点赞数
+//        //获取社团管理员数、点赞数
         $ernum = AssociatorModel::where('aid',$aid)->count();
         $likenum = AslikeModel::where('aid',$aid)->count();
-        //
-        $sector = SectionModel::where('aid',$aid)->columu('sid','name');
-
-
+        //获取部门列表
+        $sector = SectionModel::where('aid',$aid)->select();
+//        return json($sector);
+        //获取社团资讯列表
+        $informatin = InformationModel::where('aid',$aid)->select();
+//         return json($informatin);
+        return json([
+            'association'       =>      $association,
+            'ernum'             =>      $ernum,
+            'likenum'           =>      $likenum,
+            'sector'            =>      $sector,
+            'information'       =>      $informatin
+        ]);
     }
     /**用户点赞社团接口或取消点赞
      * 2020.11.25   12:50   王瑶
@@ -146,4 +162,5 @@ class Association
         $temp->save();
         return $temp->like_num;
     }
+    //添加管理员接口，社团管理员通过用户账号搜索用户
 }
