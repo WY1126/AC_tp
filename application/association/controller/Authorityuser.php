@@ -10,6 +10,7 @@ use think\Request;
 use app\model\forassociation\Associator as AssociatorModel;
 use app\model\forassociation\User as UserModel;
 use app\model\forassociation\Authority as AuthorityModel;
+use think\Response;
 
 class Authorityuser
 {
