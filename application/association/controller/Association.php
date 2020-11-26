@@ -55,23 +55,27 @@ class Association
      */
     public function getassociation($aid)
     {
-        $association = AssociatonModel::where('id',$aid)->findOrEmpty();
+        $association = AssociatonModel::where('id',$aid)->find();
         if(!$association)
         {
-            return json([
+            return ([
                 'error_code'        =>      1,
                 'msg'               =>      '错误',
             ]);
         }
         return $association;
     }
-
     //复合查询查找部门和部门下的成员
     public function test()
     {
+//        return 'dsa';
+//        die;
         $sector = SectionModel::where('sid',1)->find();
+
         $members = $sector->members;
+
         return json($members);
+
     }
 
     /**获取社团详细信息
@@ -82,10 +86,10 @@ class Association
      * @throws \think\db\exception\ModelNotFoundException
      * @throws \think\exception\DbException
      */
-    public function associationinfo(Request $request)
+    public function getassociationinfo(Request $request)
     {
         $aid = $request -> post('id');
-        //获取社团协会基本信息
+        //获取社团协会基本信息zi'xun
         $association = $this->getassociation($aid);
 //        //获取社团管理员数、点赞数
         $ernum = AssociatorModel::where('aid',$aid)->count();
@@ -94,7 +98,7 @@ class Association
         $sector = SectionModel::where('aid',$aid)->select();
 //        return json($sector);
         //获取社团资讯列表
-         $informatin = InformationModel::where('aid',$aid)->select();
+        $informatin = InformationModel::where('aid',$aid)->select();
 //         return json($informatin);
         return json([
             'association'       =>      $association,
@@ -104,9 +108,6 @@ class Association
             'information'       =>      $informatin
         ]);
     }
-
-
-    //社团点赞接口
     /**用户点赞社团接口或取消点赞
      * 2020.11.25   12:50   王瑶
      * @param Request $request
@@ -161,5 +162,5 @@ class Association
         $temp->save();
         return $temp->like_num;
     }
-    //
+    //添加管理员接口，社团管理员通过用户账号搜索用户
 }
