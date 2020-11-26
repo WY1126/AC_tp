@@ -7,6 +7,7 @@ use think\Request;
 use app\model\forassociation\Associator as AssociatorModel;
 use app\model\forassociation\AsLike as AslikeModel;
 use app\model\forassociation\Section as SectionModel;
+use app\model\forassociation\Information as InformationModel;
 
 class Association
 {
@@ -54,7 +55,7 @@ class Association
      */
     public function getassociation($aid)
     {
-        $association = AssociatonModel::where('aid',$aid)->findOrEmpty();
+        $association = AssociatonModel::where('id',$aid)->findOrEmpty();
         if(!$association)
         {
             return json([
@@ -64,33 +65,101 @@ class Association
         }
         return $association;
     }
+
     //复合查询查找部门和部门下的成员
     public function test()
     {
-//        return 'dsa';
-//        die;
         $sector = SectionModel::where('sid',1)->find();
-
         $members = $sector->members;
-
         return json($members);
-
-
     }
 
-    //进入社团详情页，获取详细信息
+    /**获取社团详细信息
+     * 2020.11.24 16：34     王瑶
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function associationinfo(Request $request)
     {
-        $aid = $request -> post('aid');
+        $aid = $request -> post('id');
         //获取社团协会基本信息
         $association = $this->getassociation($aid);
-        //获取社团人数、点赞数
+//        //获取社团管理员数、点赞数
         $ernum = AssociatorModel::where('aid',$aid)->count();
         $likenum = AslikeModel::where('aid',$aid)->count();
-        //
-        $sector = SectionModel::where('aid',$aid)->columu('sid','name');
-
-
+        //获取部门列表
+        $sector = SectionModel::where('aid',$aid)->select();
+//        return json($sector);
+        //获取社团资讯列表
+         $informatin = InformationModel::where('aid',$aid)->select();
+//         return json($informatin);
+        return json([
+            'association'       =>      $association,
+            'ernum'             =>      $ernum,
+            'likenum'           =>      $likenum,
+            'sector'            =>      $sector,
+            'information'       =>      $informatin
+        ]);
     }
 
+
+    //社团点赞接口
+    /**用户点赞社团接口或取消点赞
+     * 2020.11.25   12:50   王瑶
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function likeassociation(Request $request)
+    {
+        $aid = $request->post('aid');
+        $uid = $request->post('uid');
+        //判断点赞表是否存在
+        $temp = [
+            'aid'   =>  $aid,
+            'uid'   =>  $uid,
+        ];
+        $aslike = new AslikeModel();
+        $data = AslikeModel::where($temp)->find();
+        //不存在点赞表，创建点赞表
+        if(!$data)
+        {
+            $f = $aslike->save($temp);
+            if($f) {
+                $data = AslikeModel::where($temp)->find();
+            }
+        }
+        $likenum = $this->dolikeas($data);
+
+        //修改statue
+        $msg = ['取消点赞','点赞成功'];
+        //修改status状态
+        $data->statue += 1;     $data->statue %= 2;
+
+        $data->save();
+        return json([
+            'data'      =>      $data,
+            'likenum'   =>      $likenum,
+            'msg'       =>      $msg[$data->statue],
+        ]);
+
+    }
+    //发出点赞操作
+    public function dolikeas ($data)
+    {
+//        $data['aid'] = $request->post('aid');
+//        $data['statue'] = $request->post('statue');
+        //对社团表likenum进行增减
+        $temp = AssociatonModel::where('id',$data['aid'])->find();
+        if($data['statue']==0){
+            $temp->like_num +=1;
+        } else {
+            $temp->like_num -=1;
+        }
+        $temp->save();
+        return $temp->like_num;
+    }
+    //
 }
