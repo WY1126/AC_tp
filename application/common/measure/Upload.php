@@ -1,7 +1,7 @@
 <?php
 
 
-namespace app\all\controller;
+namespace app\common\measure;
 
 
 use think\Controller;
@@ -25,5 +25,23 @@ class Upload extends Controller
             // 上传失败获取错误信息
             return $file->getError();
         }
+    }
+
+    public function uploadimgs($files,&$imgs)
+    {
+
+        foreach($files as $file){
+            // 移动到框架应用根目录/uploads/ 目录下  验证大小和后缀
+            $info = $file->move( '../uploads');
+            if($info){
+                //向数组添加图片路径
+                array_push($imgs,$info->getSaveName());
+            }
+            else{
+                // 上传失败获取错误信息
+                echo $file->getError();
+            }
+        }
+
     }
 }
