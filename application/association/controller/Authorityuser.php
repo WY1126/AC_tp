@@ -21,6 +21,8 @@ class Authorityuser
      */
     public function getalluserauth(Request $request)
     {
+        return json(AssociatorModel::select());
+        die;
         //获取全部管理员信息
         $aid = $request->post('aid');
 //        return $aid;
@@ -36,5 +38,11 @@ class Authorityuser
         }
         return json($userinfo);
     }
+    //权限操作，删除管理员
+
+//    public function
+    //管理用户权限
+
+
 
 }
