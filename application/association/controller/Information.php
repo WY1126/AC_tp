@@ -36,16 +36,29 @@ class Information
     //发布社团资讯
     public function sendinformation(Request $request)
     {
+
         $data = $request->post();
         $files = $request->file('images');
         //存图片路径信息
         $imgs = [];
         $upload = new Upload();
         $upload->uploadimgs($files,$imgs);
-
-
-
-
+        $info = new InformationModel();
+        $data['image'] = $imgs;
+        $data['create_time'] = time();
+        $result = $info->save($data);
+        if($result) {
+            return json([
+                'error_code'        =>      1,
+                'msg'               =>      '发布成功',
+                'data'              =>      InformationModel::json(['image'])->where('id',$info['id'])->find(),
+            ]);
+        } else {
+            return json([
+                'error_code'        =>      0,
+                'msg'               =>      '发布失败，请稍后再试',
+            ]);
+        }
     }
 
 }
