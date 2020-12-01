@@ -8,19 +8,36 @@ use think\Controller;
 use think\Request;
 use think\Validate;
 use app\all\controller\Upload;
+use think\facade\Config;
 
 class User extends Controller
 {
 
-
-
-
-
-
-    //用户授权登录
-    public function signup()
+    //用户授权登陆
+    public function signup(Request $request)
     {
-
+        $data = $request->post();
+        $errmsg = $this->validate($data, [
+            'code|授权码' => 'require',
+            'nickname|昵称' => 'require',
+            'avatar|头像' => 'require'
+        ]);
+        if ($errmsg !== true) {
+            return json($errmsg, 400);
+        }
+//        return json($data);
+//        $url  = 'https://api.weixin.qq.com/sns/jscode2session?appid=wx19485a63db579f06&secret=4a8acf1e33d53101efc91d1d8a2be76a&js_code='.$data['code'].'&grant_type=authorization_code';
+        $url  = 'https://api.weixin.qq.com/sns/jscode2session?appid='.Config::get('applet.appid').'&secret='.Config::get('applet.secret').'&js_code='.$data['code'].'&grant_type=authorization_code';
+        $info = file_get_contents($url);//该函数用作发送get请求
+        $in =  json_decode($info,true);
+        return json($in['openid']);
+//        return json($data);
+//        $data['openid'] = $in['openid'];
+//        $user = new UserModel();
+//        $user->save($data);
+//        $result = UserModel::where('openid',['openid'])->find();
+//        return json($user);
+//        return ($info);
     }
     /**用户注册接口
      * 2020.11.19   王瑶
@@ -77,7 +94,7 @@ class User extends Controller
                 'msg'           =>      '登录成功',
             ]);
         }
-    }*/
+    }  */
 
     /**用户修改个人信息
      * @param Request $request
@@ -103,5 +120,5 @@ class User extends Controller
         else {
             return json($user);
         }
-    }*/
+    } */
 }
