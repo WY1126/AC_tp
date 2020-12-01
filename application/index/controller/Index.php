@@ -1,6 +1,7 @@
 <?php
 namespace app\index\controller;
 
+use think\Config;
 use think\Controller;
 use think\Db;
 use app\model\forassociation\User as Usermodel;
@@ -17,9 +18,9 @@ use app\all\controller\Upload;
 
 class Index extends Controller
 {
-    public function singup()
+    public function getjwt()
     {
-
+        return \think\facade\Config::get('jwt.key');
     }
     public function index()
     {

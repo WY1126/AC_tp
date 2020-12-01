@@ -11,12 +11,23 @@ use app\all\controller\Upload;
 
 class User extends Controller
 {
+
+
+
+
+
+
+    //用户授权登录
+    public function signup()
+    {
+
+    }
     /**用户注册接口
      * 2020.11.19   王瑶
      * 通常只存储用户名和密码作为唯一表示
      * @param Request $request
      * @return \think\response\Json
-     */
+
     public function signup(Request $request)
     {
         //验证用户名和密码，前段做就好
@@ -42,13 +53,13 @@ class User extends Controller
         } else {
             return json($user);
         }
-    }
+    }*/
 
     /**用户登录
      * 2020.11.19   王瑶
      * @param Request $request
      * @return \think\response\Json
-     */
+
     public function signin(Request $request)
     {
         $username = $request->post('username');
@@ -66,12 +77,12 @@ class User extends Controller
                 'msg'           =>      '登录成功',
             ]);
         }
-    }
+    }*/
 
     /**用户修改个人信息
      * @param Request $request
      * @return \think\response\Json
-     */
+
     public function changeuserinfo(Request $request)
     {
         $user = UserModel::where('username',$request->username)->find();
@@ -92,5 +103,5 @@ class User extends Controller
         else {
             return json($user);
         }
-    }
+    }*/
 }
