@@ -29,15 +29,26 @@ class User extends Controller
 //        $url  = 'https://api.weixin.qq.com/sns/jscode2session?appid=wx19485a63db579f06&secret=4a8acf1e33d53101efc91d1d8a2be76a&js_code='.$data['code'].'&grant_type=authorization_code';
         $url  = 'https://api.weixin.qq.com/sns/jscode2session?appid='.Config::get('applet.appid').'&secret='.Config::get('applet.secret').'&js_code='.$data['code'].'&grant_type=authorization_code';
         $info = file_get_contents($url);//该函数用作发送get请求
+//        return json($info);
         $in =  json_decode($info,true);
-        return json($in['openid']);
-//        return json($data);
-//        $data['openid'] = $in['openid'];
-//        $user = new UserModel();
-//        $user->save($data);
-//        $result = UserModel::where('openid',['openid'])->find();
-//        return json($user);
-//        return ($info);
+        $openid = $in['openid'];
+        //存入数据库并返回给前段作为
+        $result = UserModel::where('openid',$openid)->find();
+        if(!$result)
+        {
+            $data['openid'] = $openid;
+            unset($data['code']);
+            $user = new UserModel();
+            $result = $user->save($data);
+            if($result) {
+                $data['openid'] = md5($data['openid']);
+                return json($openid);
+            }
+        }
+        $result['openid'] = md5($result['openid']);
+        return json($result);
+//        return json($in);
+
     }
     /**用户注册接口
      * 2020.11.19   王瑶

@@ -18,6 +18,13 @@ use app\all\controller\Upload;
 
 class Index extends Controller
 {
+    public function getme(Request $request)
+    {
+//        return 'sa';
+//        die;
+        $info = $request->post();
+        return json($info);
+    }
     public function getjwt()
     {
         return \think\facade\Config::get('jwt.key');
