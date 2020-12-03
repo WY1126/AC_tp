@@ -61,4 +61,30 @@ class Information
         }
     }
 
+    /**查询5条最新社团资讯
+     * 2020-12-03 21:04 wangyao
+     * @param Request $request
+     * @return \think\response\Json
+     * @throws \think\exception\DbException
+     */
+    public function getnewinfor(Request $request)
+    {
+        $page = $request->get('page');
+
+//        $list = User::where('status',1)->paginate(10);
+        $information = new InformationModel();
+        $news = InformationModel::order("id",'desc')->paginate(5);
+        if($page>($news->toArray())['per_page']) {
+            return json([
+                'error_code'    =>  0,
+                "msg"           =>  '没有更多数据了'
+            ]);
+        }
+//        $news = json_decode(($news),true);
+//        return $news['data']
+//        var_dump($news);
+//        $news = $news->toArray();
+        return json($news);
+    }
+
 }
