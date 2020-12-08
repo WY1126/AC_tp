@@ -3,13 +3,14 @@
 
 namespace app\association\controller;
 use app\model\forassociation\Association as AssociatonModel;
+use think\Controller;
 use think\Request;
 use app\model\forassociation\Associator as AssociatorModel;
 use app\model\forassociation\AsLike as AslikeModel;
 use app\model\forassociation\Section as SectionModel;
 use app\model\forassociation\Information as InformationModel;
 
-class Association
+class Association extends Controller
 {
     /**获取全部社团协会接口
      * 2020.11.19   王瑶

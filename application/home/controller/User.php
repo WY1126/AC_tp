@@ -3,6 +3,7 @@
 
 namespace app\home\controller;
 use app\common\service\AssociatonModelService;
+use app\home\service\UserService;
 use app\model\forassociation\User as UserModel;
 use think\Controller;
 use think\Request;
@@ -10,7 +11,7 @@ use think\Validate;
 use app\all\controller\Upload;
 use think\facade\Config;
 
-class User extends Controller
+class User extends UserService
 {
 
     //用户授权登陆

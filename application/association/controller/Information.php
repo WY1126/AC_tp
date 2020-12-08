@@ -9,6 +9,8 @@ use app\model\forassociation\Associator as AssociatorModel;
 use app\model\forassociation\Authority as AuthorityModel;
 use app\common\measure\Upload;
 use app\model\forassociation\Information as InformationModel;
+use app\model\forassociation\Association as AssociationModel;
+
 class Information
 {
     //检查发布人是否有发布权限
@@ -36,15 +38,16 @@ class Information
     //发布社团资讯
     public function sendinformation(Request $request)
     {
-
+//        print_r($request->file('images'));
+//        die;
         $data = $request->post();
         $files = $request->file('images');
-        //存图片路径信息
         $imgs = [];
         $upload = new Upload();
         $upload->uploadimgs($files,$imgs);
-        $info = new InformationModel();
         $data['image'] = $imgs;
+        //存图片路径信息
+        $info = new InformationModel();
         $data['create_time'] = time();
         $result = $info->save($data);
         if($result) {
@@ -71,20 +74,24 @@ class Information
     {
         $page = $request->get('page');
 
-//        $list = User::where('status',1)->paginate(10);
         $information = new InformationModel();
-        $news = InformationModel::order("id",'desc')->paginate(5);
-        if($page>($news->toArray())['per_page']) {
+        $news = InformationModel::order("id",'desc')->json(['image'])->paginate(5);
+        $newsarray = $news->toArray();
+        if(((int)$page)>(($news->toArray())['last_page'])) {
             return json([
                 'error_code'    =>  0,
                 "msg"           =>  '没有更多数据了'
             ]);
         }
-//        $news = json_decode(($news),true);
-//        return $news['data']
-//        var_dump($news);
-//        $news = $news->toArray();
-        return json($news);
+        //获取社员头像地址
+        foreach ($newsarray['data'] as $key => $item)
+        {
+            $avatarurl = AssociationModel::where('id',$item['aid'])->value('avatar');
+            $name = AssociationModel::where('id',$item['aid'])->value('shortname');
+            $newsarray['data'][$key]['avatarurl'] = $avatarurl;
+            $newsarray['data'][$key]['shortname'] = $name;
+        }
+        return json($newsarray);
     }
 
 }
