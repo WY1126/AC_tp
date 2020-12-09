@@ -35,7 +35,8 @@ class Upload extends Controller
                 $info = $file->move( '../uploads');
                 if($info){
                     //向数组添加图片路径
-                    array_push($imgs,$info->getSaveName());
+                    $getSaveName=str_replace("\\","/",$info->getSaveName());
+                    array_push($imgs,$getSaveName);
                 }
                 else{
                     // 上传失败获取错误信息

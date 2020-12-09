@@ -83,7 +83,7 @@ class Information
                 "msg"           =>  '没有更多数据了'
             ]);
         }
-        //获取社员头像地址
+        //获取社员头像地址，名称
         foreach ($newsarray['data'] as $key => $item)
         {
             $avatarurl = AssociationModel::where('id',$item['aid'])->value('avatar');

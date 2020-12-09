@@ -14,7 +14,7 @@ use app\model\forassociation\AsInComment as AsInCommentmodel;
 use app\model\forassociation\AsInReply as AsInReplymodel;
 use app\model\forassociation\Test as TestModel;
 use think\Request;
-use app\all\controller\Upload;
+use app\common\measure\Upload;
 
 class Index extends Controller
 {
@@ -93,5 +93,27 @@ class Index extends Controller
         $Test = new TestModel();
         $Test ->save($testinfo);
         return json($Test);
+    }
+    public function testupload(Request $request)
+    {
+
+        $files = $request->file('image');
+        $up = new Upload();
+        $img = [];
+        if(is_array($files)){
+            foreach($files as $file){
+                // 移动到框架应用根目录/uploads/ 目录下  验证大小和后缀
+                $info = $file->move( '../uploads');
+                if($info){
+                    //向数组添加图片路径
+//                    array_push($imgs,$info->getSaveName());
+                    echo str_replace("\\","/",$info->getSaveName());
+                }
+                else{
+                    // 上传失败获取错误信息
+                    return $file->getError();
+                }
+            }
+        }
     }
 }
