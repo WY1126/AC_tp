@@ -11,6 +11,7 @@ use app\common\measure\Upload;
 use app\model\forassociation\Information as InformationModel;
 use app\model\forassociation\Association as AssociationModel;
 use app\model\forassociation\LikeInformation as LikeInformationModel;
+use app\model\forassociation\AsInComment as AsInCommentModel;
 
 class Information
 {
@@ -84,18 +85,22 @@ class Information
                 "msg"           =>  '没有更多数据了'
             ]);
         }
-        //获取社员头像地址，名称
+        //获取社员头像地址，名称,点赞数，评论数
         foreach ($newsarray['data'] as $key => $item)
         {
             $avatarurl = AssociationModel::where('id',$item['aid'])->value('avatar');
             $name = AssociationModel::where('id',$item['aid'])->value('shortname');
             $likenum = LikeInformationModel::where('iid',$item['id'])->count();
+            $commentnum = AsInCommentModel::where('iid',$item['id'])->count();
             $newsarray['data'][$key]['avatarurl'] = $avatarurl;
             $newsarray['data'][$key]['shortname'] = $name;
             $newsarray['data'][$key]['likenum'] = $likenum;
+            $newsarray['data'][$key]['commentnum'] = $commentnum;
         }
         return json($newsarray);
     }
+
+    //
     public function test($iid)
     {
         return json(LikeInformationModel::where('iid',$iid)->count());
