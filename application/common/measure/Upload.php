@@ -35,6 +35,7 @@ class Upload extends Controller
                 $info = $file->move( '../uploads');
                 if($info){
                     //向数组添加图片路径
+                    //反斜杠替换
                     $getSaveName=str_replace("\\","/",$info->getSaveName());
                     array_push($imgs,$getSaveName);
                 }

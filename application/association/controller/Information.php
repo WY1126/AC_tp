@@ -10,6 +10,7 @@ use app\model\forassociation\Authority as AuthorityModel;
 use app\common\measure\Upload;
 use app\model\forassociation\Information as InformationModel;
 use app\model\forassociation\Association as AssociationModel;
+use app\model\forassociation\LikeInformation as LikeInformationModel;
 
 class Information
 {
@@ -88,10 +89,16 @@ class Information
         {
             $avatarurl = AssociationModel::where('id',$item['aid'])->value('avatar');
             $name = AssociationModel::where('id',$item['aid'])->value('shortname');
+            $likenum = LikeInformationModel::where('iid',$item['id'])->count();
             $newsarray['data'][$key]['avatarurl'] = $avatarurl;
             $newsarray['data'][$key]['shortname'] = $name;
+            $newsarray['data'][$key]['likenum'] = $likenum;
         }
         return json($newsarray);
+    }
+    public function test($iid)
+    {
+        return json(LikeInformationModel::where('iid',$iid)->count());
     }
 
 }
