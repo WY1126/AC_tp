@@ -105,21 +105,27 @@ class Information
      */
     public function likeinformation(Request $request)
     {
-        $iid = $request->param('iid');
-        $uid = $request->param('uid');
+        $iid = $request->post('iid');
+        $uid = $request->post('uid');
         //判断是否已存在点赞表
-        $likeinfor = new LikeInformationModel();
-        $result = $likeinfor->where([
-            'iid'   =>      $iid,
-            'uid'   =>      $uid
-        ])->find();
+
+//        $result = LikeInformationModel::where([
+//            'iid'       =>      $iid,
+//            'uid'       =>      $uid,
+//        ])->find();
+        $result = LikeInformationModel::where('iid',$iid)->find();
         if(!$result){
+            $likeinfor = new LikeInformationModel();
             $result = $likeinfor->save([
                 'iid'   =>  $iid,
                 'uid'   =>  $uid,
-                'create_time'   =>  time(),
+                'create_time'   =>  time()
             ]);
+//            if($f) {
+//                $result = LikeInformationModel::get($likeinfor['id']);
+//            }
         }
+
         $temp = InformationModel::get($result['iid']);
 //        return json($temp);
 //        die();
