@@ -90,20 +90,56 @@ class Information
         {
             $avatarurl = AssociationModel::where('id',$item['aid'])->value('avatar');
             $name = AssociationModel::where('id',$item['aid'])->value('shortname');
-            $likenum = LikeInformationModel::where('iid',$item['id'])->count();
+//            $likenum = LikeInformationModel::where('iid',$item['id'])->count();
             $commentnum = AsInCommentModel::where('iid',$item['id'])->count();
             $newsarray['data'][$key]['avatarurl'] = $avatarurl;
             $newsarray['data'][$key]['shortname'] = $name;
-            $newsarray['data'][$key]['likenum'] = $likenum;
+//            $newsarray['data'][$key]['likenum'] = $likenum;
             $newsarray['data'][$key]['commentnum'] = $commentnum;
         }
         return json($newsarray);
     }
-
-    //
-    public function test($iid)
+    /**社团资讯点赞功能
+     * @param Request $request
+     * @return \think\response\Json
+     */
+    public function likeinformation(Request $request)
     {
-        return json(LikeInformationModel::where('iid',$iid)->count());
-    }
+        $iid = $request->param('iid');
+        $uid = $request->param('uid');
+        //判断是否已存在点赞表
+        $likeinfor = new LikeInformationModel();
+        $result = $likeinfor->where([
+            'iid'   =>      $iid,
+            'uid'   =>      $uid
+        ])->find();
+        if(!$result){
+            $result = $likeinfor->save([
+                'iid'   =>  $iid,
+                'uid'   =>  $uid,
+                'create_time'   =>  time(),
+            ]);
+        }
+        $temp = InformationModel::get($result['iid']);
+//        return json($temp);
+//        die();
+        //点赞
+        if($result['status']==0) {
+            $temp->likenum += 1;
+        }
+        else {
+            $temp->likenum -= 1;
+        }
+        $temp->save();
 
+        $msg = ['取消点赞','点赞成功'];
+        //修改status状态
+        $result->status += 1;     $result->status %= 2;
+        $result -> save();
+//        return $temp->likenum;
+        return json([
+            'likenum'   =>  $temp->likenum,
+            'error_msg'     =>      $msg[$result->status]
+        ]);
+    }
 }
