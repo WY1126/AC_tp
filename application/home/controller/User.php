@@ -11,7 +11,7 @@ use think\Validate;
 use app\all\controller\Upload;
 use think\facade\Config;
 
-class User extends UserService
+class User extends Controller
 {
 
     //用户授权登陆
@@ -23,14 +23,14 @@ class User extends UserService
             'nickname|昵称' => 'require',
             'avatar|头像' => 'require'
         ]);
+//        return json($data);
+//        die;
         if ($errmsg !== true) {
             return json($errmsg, 400);
         }
-//        return json($data);
-//        $url  = 'https://api.weixin.qq.com/sns/jscode2session?appid=wx19485a63db579f06&secret=4a8acf1e33d53101efc91d1d8a2be76a&js_code='.$data['code'].'&grant_type=authorization_code';
         $url  = 'https://api.weixin.qq.com/sns/jscode2session?appid='.Config::get('applet.appid').'&secret='.Config::get('applet.secret').'&js_code='.$data['code'].'&grant_type=authorization_code';
+//        $context = stream_context_create($url);
         $info = file_get_contents($url);//该函数用作发送get请求
-//        return json($info);
         $in =  json_decode($info,true);
         $openid = $in['openid'];
         //存入数据库并返回给前段作为

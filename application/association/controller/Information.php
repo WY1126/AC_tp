@@ -100,7 +100,7 @@ class Information
         return json($newsarray);
     }
 
-    //
+
     public function test($iid)
     {
         return json(LikeInformationModel::where('iid',$iid)->count());
