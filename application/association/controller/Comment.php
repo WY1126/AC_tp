@@ -4,6 +4,7 @@
 namespace app\association\controller;
 
 
+use app\model\forassociation\LikeReply;
 use think\Request;
 use app\model\forassociation\Associator as AssociatorModel;
 use app\model\forassociation\Authority as AuthorityModel;
@@ -15,6 +16,8 @@ use app\model\forassociation\AsInComment as AsInCommentModel;
 use app\model\forassociation\AsInReply as AsInReplyModel;
 use app\model\forassociation\User as UserModel;
 use app\model\forassociation\Testx as TestxModel;
+use app\model\forassociation\LikeComment as LikeCommentModel;
+use app\model\forassociation\LikeReply as LikeReplyModel;
 
 class Comment
 {
@@ -70,12 +73,37 @@ class Comment
     public function getcomment(Request $request)
     {
         $iid = $request->post('iid');
+        $uid = $request->post('uid');
         $infor = InformationModel::get($iid);
         $comments = $infor->asInComment;
         foreach ($comments as $key => $item)
         {
+            $requestdata = [
+                'uid'   =>  $uid,
+                'id'    =>  $item['id']
+            ];
+
             $comment = AsInCommentModel::get($item['id']);
+            $likecommentnum = LikeCommentModel::where('id',$item['id'])->count();
+            $commentstatus  = LikeCommentModel::where($requestdata)->value('status');
+            $comments[$key]['likenum'] = $likecommentnum;
+            $comments[$key]['status'] = $commentstatus;
             $reply = $comment->asInReply;
+            //查找回复的点赞状态和点赞数
+
+            foreach ($reply as $ke => $ite)
+            {
+                $requestdata = [
+                    'uid'   =>  $uid,
+                    'rid'   =>  $ite['id']
+                ];
+                $likereplynum = LikeReplyModel::where('rid',$ite['id'])->count();
+                $status =  LikeReplyModel::where($requestdata)->value('status');
+                if($status===null)      $status=0;
+                $reply[$ke]['likenum'] = $likereplynum;
+                $reply[$ke]['status'] = $status;
+            }
+
             $comments[$key]['reply'] = $reply;
         }
         return json($comments);

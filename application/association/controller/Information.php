@@ -12,6 +12,7 @@ use app\model\forassociation\Information as InformationModel;
 use app\model\forassociation\Association as AssociationModel;
 use app\model\forassociation\LikeInformation as LikeInformationModel;
 use app\model\forassociation\AsInComment as AsInCommentModel;
+use app\model\forassociation\AsInReply as AsinreplyModel;
 
 class Information
 {
@@ -95,10 +96,11 @@ class Information
             $name = AssociationModel::where('id',$item['aid'])->value('shortname');
             $status = LikeInformationModel::where(['iid'=>$item['id'],'uid'=>$uid])->value('status');
             $commentnum = AsInCommentModel::where('iid',$item['id'])->count();
+            $replynum = AsinreplyModel::where('iid',$item['id'])->count();
             $newsarray['data'][$key]['avatarurl'] = $avatarurl;
             $newsarray['data'][$key]['shortname'] = $name;
             $newsarray['data'][$key]['status'] = $status;
-            $newsarray['data'][$key]['commentnum'] = $commentnum;
+            $newsarray['data'][$key]['commentnum'] = $commentnum+$replynum;
         }
         return json($newsarray);
     }
