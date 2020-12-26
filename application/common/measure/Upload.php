@@ -5,6 +5,7 @@ namespace app\common\measure;
 
 
 use think\Controller;
+use think\Image;
 
 class Upload extends Controller
 {
@@ -20,6 +21,7 @@ class Upload extends Controller
         if($info){
             // 成功上传后 获取上传信息
             // 输出 20160820/42a79759f284b767dfcb2a0197904287.jpg
+
             return $info->getSaveName();
         }else{
             // 上传失败获取错误信息
@@ -34,10 +36,15 @@ class Upload extends Controller
                 // 移动到框架应用根目录/uploads/ 目录下  验证大小和后缀
                 $info = $file->move( '../uploads');
                 if($info){
+                    $tempname = '|'.$info->getFilename();
+                    $tempSaveName = str_replace("\\","/",$info->getSaveName());
+                    $tempSaveName = str_replace($info->getFilename(),$tempname,$tempSaveName);
+                    $image = Image::open($info);
+                    $image->thumb(200,200)->save('../uploads/'.$tempSaveName);
                     //向数组添加图片路径
                     //反斜杠替换
                     $getSaveName=str_replace("\\","/",$info->getSaveName());
-                    array_push($imgs,$getSaveName);
+                    array_push($imgs,$tempSaveName);
                 }
                 else{
                     // 上传失败获取错误信息

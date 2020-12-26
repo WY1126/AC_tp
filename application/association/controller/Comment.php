@@ -103,7 +103,6 @@ class Comment
                 $reply[$ke]['likenum'] = $likereplynum;
                 $reply[$ke]['status'] = $status;
             }
-
             $comments[$key]['reply'] = $reply;
         }
         return json($comments);
