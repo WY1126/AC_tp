@@ -36,7 +36,7 @@ class Upload extends Controller
                 // 移动到框架应用根目录/uploads/ 目录下  验证大小和后缀
                 $info = $file->move( '../uploads');
                 if($info){
-                    $tempname = '|'.$info->getFilename();
+                    $tempname = '@'.$info->getFilename();
                     $tempSaveName = str_replace("\\","/",$info->getSaveName());
                     $tempSaveName = str_replace($info->getFilename(),$tempname,$tempSaveName);
                     $image = Image::open($info);

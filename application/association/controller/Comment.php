@@ -4,6 +4,7 @@
 namespace app\association\controller;
 
 
+use app\model\forassociation\LikeComment;
 use app\model\forassociation\LikeReply;
 use think\Request;
 use app\model\forassociation\Associator as AssociatorModel;
@@ -80,11 +81,10 @@ class Comment
         {
             $requestdata = [
                 'uid'   =>  $uid,
-                'id'    =>  $item['id']
+                'cid'    =>  $item['id']
             ];
-
-            $comment = AsInCommentModel::get($item['id']);
-            $likecommentnum = LikeCommentModel::where('id',$item['id'])->count();
+            $comment = AsInCommentModel::where('id',$item['id'])->find();
+            $likecommentnum = AsInCommentModel::where('id',$item['id'])->value('likenum');
             $commentstatus  = LikeCommentModel::where($requestdata)->value('status');
             $comments[$key]['likenum'] = $likecommentnum;
             $comments[$key]['status'] = $commentstatus;
@@ -97,7 +97,7 @@ class Comment
                     'uid'   =>  $uid,
                     'rid'   =>  $ite['id']
                 ];
-                $likereplynum = LikeReplyModel::where('rid',$ite['id'])->count();
+                $likereplynum = AsInReplyModel::where('id',$ite['id'])->value('likenum');
                 $status =  LikeReplyModel::where($requestdata)->value('status');
                 if($status===null)      $status=0;
                 $reply[$ke]['likenum'] = $likereplynum;
@@ -106,5 +106,95 @@ class Comment
             $comments[$key]['reply'] = $reply;
         }
         return json($comments);
+    }
+
+    /**
+     * @param Request $request
+     * @return \think\response\Json
+     * @author 王瑶  2020-12-30  22:04:34
+     */
+    public function good(Request $request)
+    {
+        $type = $request->post('type');
+        $id = $request->post('id');
+        $uid = $request->post('uid');
+        if($type){
+            //回复
+            //判断是否已存在点赞表
+            $result = LikeReplyModel::where([
+                'rid'    =>      $id,
+                'uid'   =>      $uid
+            ])->find();
+            if(!$result){
+                $reply = new LikeReplyModel();
+                $reply->save([
+                    'rid'    =>      $id,
+                    'uid'   =>      $uid,
+                    'create_time'   =>  time(),
+                ]);
+                $result = LikeReply::where([
+                    'rid'   =>      $reply['rid'],
+                    'uid'   =>      $reply['uid'],
+                ])->find();
+            }
+            $temp = AsInReplyModel::where('id',$result['rid'])->find();
+            //        //点赞
+            if($result['status']==0) {
+                $temp->likenum += 1;
+            }
+            else {
+                $temp->likenum -= 1;
+            }
+            $temp->save();
+
+            $msg = ['取消点赞','点赞成功'];
+            //修改status状态
+            $result->status += 1;     $result->status %= 2;
+            $result -> save();
+    //        return $temp->likenum;
+            return json([
+                'likenum'       =>      $temp->likenum,
+                'error_msg'     =>      $msg[$result->status],
+                'status'        =>      $result->status
+            ]);
+        } else {
+            //评论
+            //判断是否已存在点赞表
+            $result = LikeCommentModel::where([
+                'cid'    =>      $id,
+                'uid'   =>      $uid
+            ])->find();
+            if(!$result){
+                $reply = new LikeComment();
+                $reply->save([
+                    'cid'    =>      $id,
+                    'uid'   =>      $uid,
+                    'create_time'   =>  time(),
+                ]);
+                $result = LikeCommentModel::where([
+                    'cid'   =>      $reply['cid'],
+                    'uid'   =>      $reply['uid'],
+                ])->find();
+            }
+            $temp = AsInCommentModel::where('id',$result['cid'])->find();
+            //        //点赞
+            if($result['status']==0) {
+                $temp->likenum += 1;
+            }
+            else {
+                $temp->likenum -= 1;
+            }
+            $temp->save();
+            $msg = ['取消点赞','点赞成功'];
+            //修改status状态
+            $result->status += 1;     $result->status %= 2;
+            $result -> save();
+            //        return $temp->likenum;
+            return json([
+                'likenum'       =>      $temp->likenum,
+                'error_msg'     =>      $msg[$result->status],
+                'status'        =>      $result->status
+            ]);
+        }
     }
 }
