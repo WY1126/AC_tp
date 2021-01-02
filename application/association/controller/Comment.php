@@ -4,6 +4,7 @@
 namespace app\association\controller;
 
 
+use app\model\forassociation\AsInReply;
 use app\model\forassociation\LikeComment;
 use app\model\forassociation\LikeReply;
 use think\Request;
@@ -30,28 +31,42 @@ class Comment
     public function sendcomment(Request $request)
     {
         $data = $request->post();
-        $avatarurl = UserModel::where('id',$data['uid'])->value('avatar');
-        $data['create_time'] = time();
-        $data['avatarurl']   = $avatarurl;
+//        $avatarurl = UserModel::where('id',$data['uid'])->value('avatar');
+//        $data['create_time'] = time();
+//        $data['avatarurl']   = $avatarurl;
 //        var_dump( $data);
         $acincomment = new AsInCommentModel();
         $flag = $acincomment->save($data);
 //        return json($flag);
         if($flag) {
             return json(AsInCommentModel::get($acincomment['id']));
+        } else {
+            return json([
+                'error_code'    =>      0,
+                'msg'           =>      '请求失败！'
+            ]);
         }
     }
-    //发送回复
+    /**
+     * @param Request $request
+     * @return \think\response\Json
+     * @author 王瑶  2021-01-01  19:16:12
+     *///发送回复
     public function sendreply(Request $request)
     {
         $data = $request->post();
-        $avatarurl = UserModel::where('id',$data['uid'])->value('avatar');
-        $data['avatarurl']   = $avatarurl;
-        $data['create_time'] = time();
+//        $avatarurl = UserModel::where('id',$data['uid'])->value('avatar');
+//        $data['avatarurl']   = $avatarurl;
+//        $data['create_time'] = time();
         $acinreply = new AsInReplyModel();
         $flag = $acinreply->save($data);
         if($flag) {
-            return json($acinreply);
+            return json(AsInReply::get($acinreply['id']));
+        } else {
+            return json([
+                'error_code'        =>      0,
+                'msg'               =>      '请求失败！'
+            ]);
         }
     }
     /** 获取社团资讯评论内容2020-12-19  23:32   wangyao
@@ -75,20 +90,22 @@ class Comment
     {
         $iid = $request->post('iid');
         $uid = $request->post('uid');
-        $infor = InformationModel::get($iid);
-        $comments = $infor->asInComment;
+//        $infor = InformationModel::get($iid);
+//        $comments = $infor->asInComment;
+        $comments = AsInCommentModel::where('iid',$iid)->order('create_time','desc')->select();
         foreach ($comments as $key => $item)
         {
             $requestdata = [
                 'uid'   =>  $uid,
                 'cid'    =>  $item['id']
             ];
-            $comment = AsInCommentModel::where('id',$item['id'])->find();
+//            $comment = AsInCommentModel::where('id',$item['id'])->find();
             $likecommentnum = AsInCommentModel::where('id',$item['id'])->value('likenum');
             $commentstatus  = LikeCommentModel::where($requestdata)->value('status');
             $comments[$key]['likenum'] = $likecommentnum;
             $comments[$key]['status'] = $commentstatus;
-            $reply = $comment->asInReply;
+//            $reply = $comment->asInReply;
+            $reply = AsInReply::where('comment_id',$item['id'])->order('create_time','desc')->select();
             //查找回复的点赞状态和点赞数
 
             foreach ($reply as $ke => $ite)
