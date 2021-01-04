@@ -72,7 +72,7 @@ class Comment
     /** 获取社团资讯评论内容2020-12-19  23:32   wangyao
      * @param Request $request
      * @return \think\response\Json
-     *
+     * @author 王瑶  2021-01-03  02:05:48
      * 基础评论前端要显示的数据
      * -用户头像地址
      * -用户昵称

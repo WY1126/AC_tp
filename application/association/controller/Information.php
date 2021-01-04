@@ -68,7 +68,7 @@ class Information
     }
 
     /**查询5条最新社团资讯
-     * 2020-12-03 21:04 wangyao
+     * @author 王瑶  2020-12-03 21:04
      * @param Request $request
      * @return \think\response\Json
      * @throws \think\exception\DbException
