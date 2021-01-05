@@ -92,13 +92,13 @@ class Information
         //获取社员头像地址，名称,点赞数，评论数，点赞状态
         foreach ($newsarray['data'] as $key => $item)
         {
-            $avatarurl = AssociationModel::where('id',$item['aid'])->value('avatar');
-            $name = AssociationModel::where('id',$item['aid'])->value('shortname');
+            $avatar = AssociationModel::where('id',$item['aid'])->value('avatar');
+            $nickname = AssociationModel::where('id',$item['aid'])->value('shortname');
             $status = LikeInformationModel::where(['iid'=>$item['id'],'uid'=>$uid])->value('status');
             $commentnum = AsInCommentModel::where('iid',$item['id'])->count();
             $replynum = AsinreplyModel::where('iid',$item['id'])->count();
-            $newsarray['data'][$key]['avatarurl'] = $avatarurl;
-            $newsarray['data'][$key]['shortname'] = $name;
+            $newsarray['data'][$key]['avatar'] = $avatar;
+            $newsarray['data'][$key]['nickname'] = $nickname;
             $newsarray['data'][$key]['status'] = $status;
             $newsarray['data'][$key]['commentnum'] = $commentnum+$replynum;
         }
