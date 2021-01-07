@@ -4,6 +4,7 @@
 namespace app\forum\controller;
 use app\model\forforum\Note as NoteModel;
 use think\Db;
+use think\Image;
 use think\Request;
 use app\common\measure\Upload;
 use app\model\forforum\LikeNoteComment as LikeNoteCommentModel;
@@ -11,10 +12,10 @@ use app\model\forforum\LikeNoteReply as LikeNoteReplyModel;
 use app\model\forforum\NoteComment as NoteCommentModel;
 use app\model\forforum\NoteReply as NoteReplyModel;
 use app\model\forforum\LikeNote as LikeNoteModel;
+use think\Config;
 
 class Note
 {
-
     /**
      * 搜索功能
      * @author 王瑶  2021-01-05  21:46:08
@@ -138,6 +139,28 @@ class Note
     public function sendnote(Request $request)
     {
         $data = $request->post();
+//        $a = ['s','s','d'];
+//        return json($data);
+//        die;
+        //存储图片路径信息
+        $info = new NoteModel();
+        $result = $info->save($data);
+        if($result) {
+            return json([
+                'error_code'        =>      1,
+                'msg'               =>      '发布成功',
+                'data'              =>      NoteModel::json(['image'])->where('id',$info['id'])->find()
+            ]);
+        } else {
+            return json([
+                'error_code'        =>      0,
+                'msg'               =>      '请求失败',
+            ]);
+        }
+    }
+    public function sendnoteb(Request $request)
+    {
+        $data = $request->post();
         $files = $request->file('images');
         $imgs = [];    $upload = new Upload();
         $upload->uploadimgs($files,$imgs);
@@ -157,6 +180,98 @@ class Note
                 'error_code'        =>      0,
                 'msg'               =>      '请求失败',
             ]);
+        }
+    }
+    public function uploadimg(Request $request)
+    {
+        $file = $request->file('file');
+        // 移动到框架应用根目录/uploads/ 目录下  验证大小和后缀
+        $info = $file->move( '../uploads');
+        if($info){
+//            $tempname = '@'.$info->getFilename();
+//            $tempSaveName = str_replace("\\","/",$info->getSaveName());
+//            $tempSaveName = str_replace($info->getFilename(),$tempname,$tempSaveName);
+//            $image = Image::open($info);
+//            $image->thumb(200,200)->save('../uploads/'.$tempSaveName);
+            //向数组添加图片路径
+            //反斜杠替换
+//            $getSaveName=str_replace("\\","/",$info->getSaveName());
+            $getSaveName = $info->getSaveName();
+//            array_push($imgs,$tempSaveName);
+//            return $tempSaveName;
+            //图片大于80KB执行压缩程序
+            if($info->getSize()>81920){
+                $source_path = '..\\uploads\\'.$getSaveName;
+                $img_info = getimagesize($source_path);
+                //        print_r($img_info[3]);
+                //return json($img_info);
+                //        print_r($img_info[0]*0.2);
+                //        die;
+                $target_path = '../uploads';
+                $imgWidth = (int)$img_info[0]*10/10;    $imgHeight = (int)$img_info[1]*10/10;
+                $saveName = $this->resize_image($source_path,$target_path,$imgWidth,$imgHeight);
+                $path = \think\facade\Config::get('rootaddress.imagerootaddress')."\\".$getSaveName;
+                $this->delFile($path);
+                return str_replace("\\","/",$saveName);
+            }
+            return str_replace("\\","/",$getSaveName);
+        }
+        else{
+            // 上传失败获取错误信息
+            return $file->getError();
+        }
+    }
+
+    /**
+     * 按照指定的尺寸压缩图片
+     * @param $source_path  原图路径
+     * @param $target_path  保存路径
+     * @param $imgWidth     目标宽度
+     * @param $imgHeight    目标高度
+     * @return bool|string
+     */
+    function resize_image($source_path,$target_path,$imgWidth,$imgHeight)
+    {
+        $source_info = getimagesize($source_path);
+        $source_mime = $source_info['mime'];
+        switch ($source_mime)
+        {
+            case 'image/gif':
+                $source_image = imagecreatefromgif($source_path);
+                break;
+            case 'image/jpeg':
+                $source_image = imagecreatefromjpeg($source_path);
+                break;
+            case 'image/png':
+                $source_image = imagecreatefrompng($source_path);
+                break;
+            default:
+                return false;
+                break;
+        }
+        $target_image     = imagecreatetruecolor($imgWidth, $imgHeight); //创建一个彩色的底图
+        imagecopyresampled($target_image, $source_image, 0, 0, 0, 0, $imgWidth, $imgHeight, $source_info[0], $source_info[1]);
+        //保存图片到本地
+        $dir = $target_path. '/'. date("Ymd") . '/';
+        if (!is_dir($dir)) {
+            mkdir($dir, 0777);
+        }
+        $temp =date("YmdHis").uniqid().'.jpg';
+        $fileName = $dir.$temp;
+        if(!imagejpeg($target_image,'./'.$fileName)){
+            $fileName = '';
+        }
+        imagedestroy($target_image);
+        return  date("Ymd") . '/'.$temp;
+    }
+    //删除文件  $path为绝对路径
+    public function delFile($path)
+    {
+        $url=iconv('utf-8','gbk',$path);
+        if(PATH_SEPARATOR == ':'){ //linux
+            unlink($path);
+        }else{  //Windows
+            unlink($url);
         }
     }
 }
