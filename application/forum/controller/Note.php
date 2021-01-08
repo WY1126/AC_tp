@@ -200,7 +200,8 @@ class Note
 //            array_push($imgs,$tempSaveName);
 //            return $tempSaveName;
             //图片大于80KB执行压缩程序
-            if($info->getSize()>81920){
+            if($info->getSize()>81920
+            ){
                 $source_path = '..\\uploads\\'.$getSaveName;
                 $img_info = getimagesize($source_path);
                 //        print_r($img_info[3]);
@@ -224,10 +225,10 @@ class Note
 
     /**
      * 按照指定的尺寸压缩图片
-     * @param $source_path  原图路径
-     * @param $target_path  保存路径
-     * @param $imgWidth     目标宽度
-     * @param $imgHeight    目标高度
+     * @param $source_path
+     * @param $target_path
+     * @param $imgWidth
+     * @param $imgHeight
      * @return bool|string
      */
     function resize_image($source_path,$target_path,$imgWidth,$imgHeight)
@@ -249,7 +250,7 @@ class Note
                 return false;
                 break;
         }
-        $target_image     = imagecreatetruecolor($imgWidth, $imgHeight); //创建一个彩色的底图
+        $target_image     = imagecreatetruecolor((int)$imgWidth, (int)$imgHeight); //创建一个彩色的底图
         imagecopyresampled($target_image, $source_image, 0, 0, 0, 0, $imgWidth, $imgHeight, $source_info[0], $source_info[1]);
         //保存图片到本地
         $dir = $target_path. '/'. date("Ymd") . '/';
