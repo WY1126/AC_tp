@@ -50,6 +50,7 @@ class Telbook
         //按部门查询
         else if($sector!=0 && $searchinfo==''){
             $tels = Db::name('tel_book')
+
                 ->where('sid',$sector)
                 ->alias('tb')->join('telBookSector tbs','tb.sid = tbs.id')
                 ->field('tb.*,tbs.sector')->paginate(30);
