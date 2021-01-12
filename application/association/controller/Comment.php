@@ -125,7 +125,7 @@ class Comment
         return json($comments);
     }
 
-    /**
+    /**点赞
      * @param Request $request
      * @return \think\response\Json
      * @author 王瑶  2020-12-30  22:04:34
