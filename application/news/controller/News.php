@@ -47,5 +47,4 @@ class News
         $data['content'] = $content;
         return json($data);
     }
-
 }

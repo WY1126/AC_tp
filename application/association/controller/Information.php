@@ -96,8 +96,7 @@ class Information
             $nickname = AssociationModel::where('id',$item['aid'])->value('shortname');
             $status = LikeInformationModel::where(['iid'=>$item['id'],'uid'=>$uid])->value('status');
             $commentnum = AsInCommentModel::where('iid',$item['id'])->count();
-            $replynum = AsinreplyModel::where('iid',$item['id'])
-                ->count();
+            $replynum = AsinreplyModel::where('iid',$item['id'])->count();
             $newsarray['data'][$key]['avatar'] = $avatar;
             $newsarray['data'][$key]['nickname'] = $nickname;
             $newsarray['data'][$key]['status'] = $status;

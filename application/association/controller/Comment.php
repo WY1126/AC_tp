@@ -23,8 +23,9 @@ use app\model\forassociation\LikeReply as LikeReplyModel;
 
 class Comment
 {
-    /**2020-12-18   wangyao
+    /**
      * 发送社团资讯评论
+     * @author 王瑶  2021-01-14  09:58:42
      * @param Request $request
      * @return \think\response\Json
      */
@@ -48,10 +49,11 @@ class Comment
         }
     }
     /**
+     * 发送回复
      * @param Request $request
      * @return \think\response\Json
      * @author 王瑶  2021-01-01  19:16:12
-     *///发送回复
+     */
     public function sendreply(Request $request)
     {
         $data = $request->post();
@@ -69,7 +71,8 @@ class Comment
             ]);
         }
     }
-    /** 获取社团资讯评论内容2020-12-19  23:32   wangyao
+    /**
+     * 获取社团资讯评论内容2020-12-19  23:32   wangyao
      * @param Request $request
      * @return \think\response\Json
      * @author 王瑶  2021-01-03  02:05:48
@@ -124,8 +127,8 @@ class Comment
         }
         return json($comments);
     }
-
-    /**点赞
+    /**
+     * 点赞
      * @param Request $request
      * @return \think\response\Json
      * @author 王瑶  2020-12-30  22:04:34

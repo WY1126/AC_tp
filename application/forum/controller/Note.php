@@ -275,7 +275,11 @@ class Note
             unlink($url);
         }
     }
-    //点赞帖子
+    /**点赞帖子
+     * @author 王瑶  2021-01-14  09:55:13
+     * @param Request $request
+     * @return \think\response\Json
+     */
     public function likenote(Request $request)
     {
         $nid = $request->post('nid');
@@ -356,8 +360,6 @@ class Note
             ])->find();
 //            }
         }
-
-
         $temp = InformationModel::get($result['iid']);
 //        return json($temp);
 //        die();
