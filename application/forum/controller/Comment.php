@@ -10,14 +10,15 @@ use app\model\forforum\LikeNoteReply as LikeNoteReplyModel;
 use app\model\forforum\LikeNoteComment as LikeNoteCommentModel;
 use think\Db;
 use think\Request;
+use think\response\Json;
 
 class Comment
 {
     /**
      * 发送评论
-     * @author 王瑶  2021-01-14  16:00:11
      * @param Request $request
-     * @return \think\response\Json
+     * @return Json
+     * @author 王瑶  2021-01-14  16:00:11
      */
     public function sendcomment(Request $request)
     {
@@ -25,7 +26,14 @@ class Comment
         $notecomment = new NoteCommentModel();
         $result = $notecomment->save($data);
         if($result) {
-            return json(NoteCommentModel::get($notecomment['id']));
+            $comments = NoteCommentModel::get($notecomment['id']);
+            $info = UserMOdel::get($notecomment['uid']);
+//            $nickname = UserMOdel::where('id',$notecomment['uid'])->value('nickname');
+//            $avatar = UserMOdel::where('id',$notecomment['uid'])->value( 'avatar');
+            $comments['nickname'] = $info['nickname'];
+            $comments['avatar'] = $info['avatar'];
+            $comments['reply'] = [];
+            return json($comments);
         } else {
             return json([
                'error_code' =>      1,
@@ -36,9 +44,9 @@ class Comment
 
     /**
      * 发送帖子回复
-     *@author 王瑶  2021-01-14  17:09:06
+     * @author 王瑶  2021-01-14  17:09:06
      * @param Request $request
-     * @return \think\response\Json
+     * @return Json
      */
     public function sendreply(Request $request)
     {
@@ -46,7 +54,13 @@ class Comment
         $notereply = new NoteReplyModel();
         $result = $notereply -> save($data);
         if($result) {
-            return json(NoteReplyModel::get($notereply['id']));
+            $replys = NoteReplyModel::get($notereply['id']);
+            $userInfo = UserMOdel::get($notereply['uid']);
+            $toUserInfo = UserMOdel::get($notereply['to_uid']);
+            $replys['nickname'] = $userInfo['nickname'];
+            $replys['avatar'] = $userInfo['avatar'];
+            $replys['to_nickname'] = $toUserInfo['nickname'];
+            return  json($replys);
         } else {
             return json([
                 'error_code' =>   1,
@@ -59,7 +73,7 @@ class Comment
      * 获取帖子评论和回复
      * @author 王瑶  2021-01-14  19:59:09
      * @param Request $request
-     * @return \think\response\Json
+     * @return Json
      * @throws \think\exception\DbException
      */
     public function getcomment(Request $request)
@@ -99,7 +113,7 @@ class Comment
      * 帖子评论、回复的点赞
      * @author 王瑶  2021-01-14  21:54:23
      * @param Request $request
-     * @return \think\response\Json
+     * @return Json
      */
     public function dolike(Request $request)
     {

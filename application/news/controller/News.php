@@ -8,6 +8,15 @@ use think\Url;
 
 class News
 {
+     public function subtext($text, $length)
+    {
+        if(mb_strlen($text, 'utf8') > $length) {
+            return mb_substr($text, 0, $length, 'utf8').'...';
+        } else {
+            return $text;
+        }
+    }
+
     public function getnews()
     {
         $ql = QueryList::get('https://www.jxutcm.edu.cn/');     //江西中医药大学官网
@@ -17,6 +26,8 @@ class News
             if($type==76)
                 continue;
             $rt = [];
+//            $text = $ql->find('.c498'.$type)->texts();   //新闻标题
+//            $rt['title'] = $this->subtext($text,22);
             $rt['title'] = $ql->find('.c498'.$type)->texts();   //新闻标题
             $rt['create_time'] = $ql->find('.timestyle498'.$type)->texts(); //时间
             $rt['src'] = $ql->find('.c498'.$type)->map(function($item){     //地址
@@ -25,6 +36,12 @@ class News
             for($key = 0 ; $key < count($rt['title']) ; $key++)
             {
                 $data[$i][$key]['title'] = $rt['title'][$key];
+//                $data[$i][$key]['title'] = $this->getnews($data[$i][$key]['title'],22);
+                $text = $data[$i][$key]['title'];
+                $data[$i][$key]['title'] = $this->subtext($text,20);
+//                if(strlen($data[$i][$key]['title'])>22){
+//                    $data[$i][$key]['title'] = substr($data[$i][$key]['title'],0,22).'…';
+//                }
                 $data[$i][$key]['create_time'] = $rt['create_time'][$key];
                 $data[$i][$key]['src'] = $rt['src'][$key];
             }

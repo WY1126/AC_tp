@@ -138,6 +138,8 @@ class Note
      */
     public function sendnote(Request $request)
     {
+        $uid = $request->post('uid');
+
         $data = $request->post();
 //        $a = ['s','s','d'];
 //        return json($data);
@@ -383,4 +385,5 @@ class Note
             'status'        =>      $result->status
         ]);
     }
+    //检查发送
 }
