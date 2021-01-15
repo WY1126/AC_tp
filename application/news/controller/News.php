@@ -40,7 +40,7 @@ class News
                 $text = $data[$i][$key]['title'];
                 $data[$i][$key]['title'] = $this->subtext($text,20);
 //                if(strlen($data[$i][$key]['title'])>22){
-//                    $data[$i][$key]['title'] = substr($data[$i][$key]['title'],0,22).'…';
+//                  //  $data[$i][$key]['title'] = substr($data[$i][$key]['title'],0,22).'…';
 //                }
                 $data[$i][$key]['create_time'] = $rt['create_time'][$key];
                 $data[$i][$key]['src'] = $rt['src'][$key];
