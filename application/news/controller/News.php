@@ -17,6 +17,11 @@ class News
         }
     }
 
+    /**
+     * 获取新闻标题、时间和原文地址
+     * @author 王瑶  2020-11-3  16:11:52
+     * @return \think\response\Json
+     */
     public function getnews()
     {
         $ql = QueryList::get('https://www.jxutcm.edu.cn/');     //江西中医药大学官网
@@ -49,6 +54,13 @@ class News
         }
         return json($data);
     }
+
+    /**
+     * 获取新闻详细内容
+     * @author 王瑶  2020-11-03  16:12:29
+     * @param Request $request
+     * @return \think\response\Json
+     */
     public function getnewscontent(Request $request)
     {
         $rurl = $request->get('rurl');

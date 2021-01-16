@@ -16,6 +16,8 @@ use think\Config;
 
 class Note
 {
+    //图片压缩时 图片尺寸比例
+    public $x = 0.9;
     /**
      * 搜索功能
      * @author 王瑶  2021-01-05  21:46:08
@@ -87,7 +89,7 @@ class Note
         $tab = $request->param('tab');
         $uid = $request->param('uid');
         //join查询-用户昵称和头像地址
-        if($tab!=0){
+        if($tab!=0) {
             $notes = Db::name('note')
                 ->order("id",'desc')->json(['image'])                   //排序，json输出图片信息
                 ->where('tab',$tab)
@@ -130,6 +132,18 @@ class Note
         }
         return json($notes);
     }
+
+    //校验发送公告用户的权限
+    public function checkuser($uid)
+    {
+        $result = Db::name('userAdmin')->where('id',$uid)->find();
+        if($result!=null) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
     /**
      * 发送帖子-初步
      * @param Request $request
@@ -138,9 +152,24 @@ class Note
      */
     public function sendnote(Request $request)
     {
+//        print_r( $request->post('image'));
+//        die;
         $uid = $request->post('uid');
 
         $data = $request->post();
+        if($request->post('tab')==8){
+            if(!$this->checkuser($uid)) {
+                //json转数组
+                $image = json_decode($request->post('image'),true);
+                foreach ($image as $key => $item) {
+                    $this->delFile(\think\facade\Config::get('rootaddress.imagerootaddress')."\\".$item);
+                }
+                return json([
+                    'error_code' => 0,
+                    'msg'   =>  '管理员操作'
+                ]);
+            }
+        }
 //        $a = ['s','s','d'];
 //        return json($data);
 //        die;
@@ -184,6 +213,7 @@ class Note
             ]);
         }
     }
+
     public function uploadimg(Request $request)
     {
         $file = $request->file('file');
@@ -202,8 +232,7 @@ class Note
 //            array_push($imgs,$tempSaveName);
 //            return $tempSaveName;
             //图片大于80KB执行压缩程序
-            if($info->getSize()>81920
-            ){
+            if($info->getSize()>81920){
                 $source_path = '..\\uploads\\'.$getSaveName;
                 $img_info = getimagesize($source_path);
                 //        print_r($img_info[3]);
@@ -211,7 +240,7 @@ class Note
                 //        print_r($img_info[0]*0.2);
                 //        die;
                 $target_path = '../uploads';
-                $imgWidth = (int)$img_info[0]*10/10;    $imgHeight = (int)$img_info[1]*10/10;
+                $imgWidth = (int)$img_info[0]*$this->x;    $imgHeight = (int)$img_info[1]*$this->x;
                 $saveName = $this->resize_image($source_path,$target_path,$imgWidth,$imgHeight);
                 $path = \think\facade\Config::get('rootaddress.imagerootaddress')."\\".$getSaveName;
                 $this->delFile($path);
@@ -267,6 +296,7 @@ class Note
         imagedestroy($target_image);
         return  date("Ymd") . '/'.$temp;
     }
+
     //删除文件  $path为绝对路径
     public function delFile($path)
     {

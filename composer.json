@@ -25,7 +25,8 @@
         "jaeger/querylist": "^4.2",
         "jaeger/querylist-ext-request":"^1.0",
         "jaeger/querylist-ext-multi":"^1.0",
-        "jaeger/querylist-ext-login":"^1.0"
+        "jaeger/querylist-ext-login":"^1.0",
+      "ext-json": "*"
     },
     "autoload": {
         "psr-4": {
