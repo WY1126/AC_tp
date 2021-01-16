@@ -24,7 +24,7 @@ use app\model\forassociation\LikeReply as LikeReplyModel;
 class Comment
 {
     /**
-     * 发送社团资讯评论
+     * 发送社团资讯评论···
      * @author 王瑶  2021-01-14  09:58:42
      * @param Request $request
      * @return \think\response\Json
@@ -44,7 +44,7 @@ class Comment
         } else {
             return json([
                 'error_code'    =>      0,
-                'msg'           =>      '请求失败！'
+                'msg'           =>      '请求失败！！！！'
             ]);
         }
     }
