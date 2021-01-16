@@ -17,7 +17,7 @@ use think\Config;
 class Note
 {
     //图片压缩时 图片尺寸比例
-    public $x = 0.9;
+    public $x = 0.6;
     /**
      * 搜索功能
      * @author 王瑶  2021-01-05  21:46:08
