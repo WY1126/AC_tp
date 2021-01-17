@@ -157,10 +157,11 @@ class Note
         $uid = $request->post('uid');
 
         $data = $request->post();
+        $image = json_decode($request->post('image'),true);
         if($request->post('tab')==8){
             if(!$this->checkuser($uid)) {
                 //json转数组
-                $image = json_decode($request->post('image'),true);
+//                $image = json_decode($request->post('image'),true);
                 foreach ($image as $key => $item) {
                     $this->delFile(\think\facade\Config::get('rootaddress.imagerootaddress')."\\".$item);
                 }
@@ -174,6 +175,10 @@ class Note
 //        return json($data);
 //        die;
         //存储图片路径信息
+//        if(count($image)==1){
+//            $data['']
+//        }
+        $data['imglen'] = count($image);
         $info = new NoteModel();
         $result = $info->save($data);
         if($result) {

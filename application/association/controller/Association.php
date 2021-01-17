@@ -24,7 +24,6 @@ class Association extends Controller
             ->where('uid',$uid)
             ->alias('aor')->join('association a','aor.aid = a.id')
             ->field('aor.uid,a.*')->select();
-
 //        return json($myList);
 //        $aid = AssociatorModel::where('uid',$uid)->column('aid');
 //        return json($aid);
