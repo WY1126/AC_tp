@@ -30,6 +30,7 @@ class Telbook
             return json(TelBookModel::get($telbook['id']));
         }
     }
+
     /**获取电话簿
      * @author 王瑶  2021-01-08  17:39:32
      * @param Request $request
@@ -63,7 +64,7 @@ class Telbook
                 ->field('tb.*,tbs.sector')->paginate(30);
 //            if($tels['data']===[])
 //                return 'sa';
-            if(($tels->toArray())['data']==[])
+            if(($tels->toArray())['data']==[]&&$page==1)
             {
                 return json([
                     'error_code'    =>  1,

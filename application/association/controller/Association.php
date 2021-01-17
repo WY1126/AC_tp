@@ -4,6 +4,7 @@
 namespace app\association\controller;
 use app\model\forassociation\Association as AssociatonModel;
 use think\Controller;
+use think\Db;
 use think\Request;
 use app\model\forassociation\Associator as AssociatorModel;
 use app\model\forassociation\AsLike as AslikeModel;
@@ -12,6 +13,35 @@ use app\model\forassociation\Information as InformationModel;
 
 class Association extends Controller
 {
+    //获取我的社团和全部社团
+    public function getass(Request $request)
+    {
+//        return 'sa';
+//        die;
+        $uid = $request->get('uid');
+        //关联查询
+        $myList = Db::name('associator')
+            ->where('uid',$uid)
+            ->alias('aor')->join('association a','aor.aid = a.id')
+            ->field('aor.uid,a.*')->select();
+
+//        return json($myList);
+//        $aid = AssociatorModel::where('uid',$uid)->column('aid');
+//        return json($aid);
+//        die;
+//        $mylist = AssociatonModel::whereIn('aid',$aid)->select();
+        $countnum = AssociatonModel::count('id');
+        $alllist = AssociatonModel::select();
+//        $list['countnum'] = $countnum;
+//        $list['mylist'] = $myList;
+        return json([
+            'allassociation'    =>  $alllist,
+            'countnum'          =>  $countnum,
+            'mylist'            =>  $myList
+        ]);
+
+    }
+
     /**获取全部社团协会接口
      * 2020.11.19   王瑶
      * @return \think\response\Json
@@ -35,7 +65,7 @@ class Association extends Controller
     {
         $uid = $request -> post('uid');
         //column获取某一列的值
-        $aid = AssociatorModel::where('uid',$uid)->column('aid');
+        $aid = AssociatorModel::where('uid',$uid)->column('id');
         if(!$aid)
         {
             return json([
