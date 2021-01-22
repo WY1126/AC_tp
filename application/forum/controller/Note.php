@@ -155,7 +155,6 @@ class Note
 //        print_r( $request->post('image'));
 //        die;
         $uid = $request->post('uid');
-
         $data = $request->post();
         $image = json_decode($request->post('image'),true);
         if($request->post('tab')==8){
