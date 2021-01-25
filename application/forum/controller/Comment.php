@@ -23,6 +23,7 @@ class Comment
     public function sendcomment(Request $request)
     {
         $data = $request->param();
+        $data['content'] = base64_encode($data['content']);
         $notecomment = new NoteCommentModel();
         $result = $notecomment->save($data);
         if($result) {
@@ -32,6 +33,7 @@ class Comment
 //            $avatar = UserMOdel::where('id',$notecomment['uid'])->value( 'avatar');
             $comments['nickname'] = $info['nickname'];
             $comments['avatar'] = $info['avatar'];
+            $comments['content'] = base64_decode($comments['content']);
             $comments['reply'] = [];
             return json($comments);
         } else {
@@ -51,12 +53,14 @@ class Comment
     public function sendreply(Request $request)
     {
         $data = $request -> param();
+        $data['content'] = base64_encode($data['content']);
         $notereply = new NoteReplyModel();
         $result = $notereply -> save($data);
         if($result) {
             $replys = NoteReplyModel::get($notereply['id']);
             $userInfo = UserMOdel::get($notereply['uid']);
             $toUserInfo = UserMOdel::get($notereply['to_uid']);
+            $replys['content'] = base64_decode($replys['content']);
             $replys['nickname'] = $userInfo['nickname'];
             $replys['avatar'] = $userInfo['avatar'];
             $replys['to_nickname'] = $toUserInfo['nickname'];
@@ -91,6 +95,7 @@ class Comment
                     //获取请求用户的评论点赞状态
                     $status = LikeNoteCommentModel::where(['uid'=>$uid,'cid'=>$item['id']])->value('status');
                     $item['status'] = $status;
+                    $item['content'] = base64_decode($item['content']);
                     //评论的回复内容
                     $reply = Db::name('noteReply')
                         -> where('comment_id',$item['id']) -> order('create_time','desc')
@@ -101,6 +106,7 @@ class Comment
                         global $uid;
                         $reply[$key]['status'] = LikeNoteReplyModel::where(['uid'=>$uid,'rid'=>$ite['id']])->value('status');
                         $reply[$key]['to_nickname'] = UserMOdel::where('id',$ite['to_uid'])->value('nickname');
+                        $reply[$key]['content'] = base64_decode($reply[$key]['content']);
                     }
                     $item['reply'] = $reply;
                     return $item;
