@@ -104,7 +104,7 @@ class Note
                             + NoteReplyModel::where('nid',$item['id'])->count();
                         //获取用户点赞状态
                         $item['status'] = LikeNoteModel::where(['nid'=>$item['id'],'uid'=> $uid])->count();
-                        $item['content'] = base64_decode($item['content']);
+//                        $item['content'] = base64_decode($item['content']);//base64解码
                         return $item;
                     });
         } else {
@@ -121,7 +121,7 @@ class Note
                             + NoteReplyModel::where('nid',$item['id'])->count();
                         //获取用户点赞状态
                         $item['status'] = LikeNoteModel::where(['nid'=>$item['id'],'uid'=> $uid])->count();
-                        $item['content'] = base64_decode($item['content']);
+//                        $item['content'] = base64_decode($item['content']);
                         return $item;
                     });
         }
@@ -158,7 +158,7 @@ class Note
 //        die;
         $uid = $request->post('uid');
         $data = $request->post();
-        $data['content'] = base64_encode($data['content']);
+//        $data['content'] = base64_encode($data['content']);
         $image = json_decode($request->post('image'),true);
         if($request->post('tab')==8){
             if(!$this->checkuser($uid)) {
@@ -173,13 +173,6 @@ class Note
                 ]);
             }
         }
-//        $a = ['s','s','d'];
-//        return json($data);
-//        die;
-        //存储图片路径信息
-//        if(count($image)==1){
-//            $data['']
-//        }
         $data['imglen'] = count($image);
         $info = new NoteModel();
         $result = $info->save($data);

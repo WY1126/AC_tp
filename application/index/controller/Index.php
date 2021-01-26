@@ -16,8 +16,13 @@ use app\model\forassociation\Test as TestModel;
 use think\Request;
 use app\common\measure\Upload;
 
+
 class Index extends Controller
 {
+    public function getnotify()
+    {
+        return json(Db::name('notify')->select());
+    }
     public function getme(Request $request)
     {
 //        return 'sa';
