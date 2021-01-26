@@ -42,8 +42,11 @@ class User extends Controller
             $user = new UserModel();
             $result = $user->save($data);
             if($result) {
-                $data['openid'] = md5($data['openid']);
-                return json($openid);
+
+//                $data['openid'] = md5($data['openid']);
+                $result['openid'] = md5($result['openid']);
+//                return json($openid);
+                return json($result);
             }
         }
         $result['openid'] = md5($result['openid']);
