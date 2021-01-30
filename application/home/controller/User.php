@@ -5,7 +5,9 @@ namespace app\home\controller;
 use app\common\service\AssociatonModelService;
 use app\home\service\UserService;
 use app\model\forassociation\User as UserModel;
+use app\model\forforum\UserAdmin as UserAdminModel;
 use think\Controller;
+use think\Db;
 use think\Request;
 use think\Validate;
 use app\all\controller\Upload;
@@ -44,12 +46,24 @@ class User extends Controller
             if($result) {
 
 //                $data['openid'] = md5($data['openid']);
+//                $result = Db::name('user')
+//                    -> where('id',$result['id'])
+//                    -> alias('u') -> join('')
+//                $user_type = ;
+//                if(UserAdminModel::get($result['id']) == null)
+//                    $user_type = 2;
+//                else $user_type = 1;
                 $result = UserModel::get($result['id']);
                 $result['openid'] = md5($result['openid']);
+                $result['user_type'] = 2;
 //                return json($openid);
                 return json($result);
             }
         }
+        if(UserAdminModel::get($result['id']) == null)
+            $user_type = 2;
+        else $user_type = 1;
+        $result['user_type'] = $user_type;
         $result['openid'] = md5($result['openid']);
         return json($result);
 //        return json($in);

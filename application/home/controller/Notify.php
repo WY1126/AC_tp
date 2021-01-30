@@ -112,6 +112,8 @@ class Notify
         switch ($target_type){
             case '1':   //帖子
                 $msg = NoteModel::where('id',$target_id) -> value('content');
+                if($msg == ''||$msg == null)
+                $msg = '(点击前往)';
                 break;
             case '2':   //评论
                 $msg = NoteCommentModel::where('id',$target_id) -> value('content');
