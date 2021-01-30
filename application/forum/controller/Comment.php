@@ -88,7 +88,7 @@ class Comment
         $comments = Db::name('noteComment')
             -> where('nid',$nid) -> order('create_time','desc')
             -> alias('nc') -> join('user u','nc.uid = u.id')
-            -> field('nc.*,u.nickname,u.avatar')->paginate(20)
+            -> field('nc.*,u.nickname,u.avatar')->paginate(50)
             ->each (
                 function ($item , $key) {              //获取点赞状态、评论数和回复
                     global $uid;
@@ -114,7 +114,6 @@ class Comment
             );
         return json($comments);
     }
-
     /**
      * 帖子评论、回复的点赞
      * @author 王瑶  2021-01-14  21:54:23
@@ -186,7 +185,7 @@ class Comment
                 ])->find();
             }
             $temp = NoteCommentModel::where('id',$result['cid'])->find();
-            //        //点赞
+            //点赞
             if($result['status']==0) {
                 $temp->likenum += 1;
             }
@@ -205,7 +204,5 @@ class Comment
                 'status'        =>      $result->status
             ]);
         }
-
-
     }
 }

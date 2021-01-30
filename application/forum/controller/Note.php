@@ -103,7 +103,7 @@ class Note
                         $item['commentnum'] = NoteCommentModel::where('nid',$item['id'])->count()
                             + NoteReplyModel::where('nid',$item['id'])->count();
                         //获取用户点赞状态
-                        $item['status'] = LikeNoteModel::where(['nid'=>$item['id'],'uid'=> $uid])->count();
+                        $item['status'] = LikeNoteModel::where(['nid'=>$item['id'],'uid'=> $uid])->value('status');
 //                        $item['content'] = base64_decode($item['content']);//base64解码
                         return $item;
                     });
@@ -120,7 +120,7 @@ class Note
                         $item['commentnum'] = NoteCommentModel::where('nid',$item['id'])->count()
                             + NoteReplyModel::where('nid',$item['id'])->count();
                         //获取用户点赞状态
-                        $item['status'] = LikeNoteModel::where(['nid'=>$item['id'],'uid'=> $uid])->count();
+                        $item['status'] = LikeNoteModel::where(['nid'=>$item['id'],'uid'=> $uid])->value('status');
 //                        $item['content'] = base64_decode($item['content']);
                         return $item;
                     });
@@ -145,9 +145,8 @@ class Note
             return false;
         }
     }
-
     /**
-     * 发送帖子-初步
+     * 发送帖子
      * @param Request $request
      * @return \think\response\Json
      * @author 王瑶  2021-01-04  22:05:03
@@ -307,7 +306,8 @@ class Note
             unlink($url);
         }
     }
-    /**点赞帖子
+    /**
+     * 点赞帖子
      * @author 王瑶  2021-01-14  09:55:13
      * @param Request $request
      * @return \think\response\Json
@@ -321,27 +321,19 @@ class Note
             'nid'       =>      $nid,
             'uid'       =>      $uid,
         ])->find();
-
-
         if(!$result){
             $likeinfor = new LikeNoteModel();
-
             $likeinfor->save([
                 'nid'   =>  $nid,
                 'uid'   =>  $uid,
                 'create_time'   =>  time()
             ]);
-//            if($f) {
             $result = LikeNoteModel::where([
                 'nid'        =>      $likeinfor['nid'],
                 'uid'        =>      $likeinfor['uid']
             ])->find();
-//            }
         }
         $temp = NoteModel::get($result['nid']);
-//        return json($temp);
-//        die();
-        //点赞
         if($result['status']==0) {
             $temp->likenum += 1;
         }
@@ -349,71 +341,14 @@ class Note
             $temp->likenum -= 1;
         }
         $temp->save();
-
         $msg = ['取消点赞','点赞成功'];
         //修改status状态
         $result->status += 1;     $result->status %= 2;
         $result -> save();
-//        return $temp->likenum;
         return json([
             'likenum'       =>      $temp->likenum,
             'error_msg'     =>      $msg[$result->status],
             'status'        =>      $result->status
         ]);
     }
-
-    /**社团资讯点赞功能
-     * @param Request $request
-     * @return \think\response\Json
-     */
-    public function likeinformation(Request $request)
-    {
-        $iid = $request->post('iid');
-        $uid = $request->post('uid');
-
-        //判断是否已存在点赞表
-        $result = LikeInformationModel::where([
-            'iid'       =>      $iid,
-            'uid'       =>      $uid,
-        ])->find();
-
-        if(!$result){
-            $likeinfor = new LikeInformationModel();
-
-            $likeinfor->save([
-                'iid'   =>  $iid,
-                'uid'   =>  $uid,
-                'create_time'   =>  time()
-            ]);
-//            if($f) {
-            $result = LikeInformationModel::where([
-                'iid'        =>      $likeinfor['iid'],
-                'uid'        =>      $likeinfor['uid']
-            ])->find();
-//            }
-        }
-        $temp = InformationModel::get($result['iid']);
-//        return json($temp);
-//        die();
-        //点赞
-        if($result['status']==0) {
-            $temp->likenum += 1;
-        }
-        else {
-            $temp->likenum -= 1;
-        }
-        $temp->save();
-
-        $msg = ['取消点赞','点赞成功'];
-        //修改status状态
-        $result->status += 1;     $result->status %= 2;
-        $result -> save();
-//        return $temp->likenum;
-        return json([
-            'likenum'       =>      $temp->likenum,
-            'error_msg'     =>      $msg[$result->status],
-            'status'        =>      $result->status
-        ]);
-    }
-    //检查发送
 }

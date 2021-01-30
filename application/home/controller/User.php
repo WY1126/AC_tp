@@ -44,6 +44,7 @@ class User extends Controller
             if($result) {
 
 //                $data['openid'] = md5($data['openid']);
+                $result = UserModel::get($result['id']);
                 $result['openid'] = md5($result['openid']);
 //                return json($openid);
                 return json($result);
